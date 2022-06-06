@@ -1,4 +1,4 @@
-TARGET_SIM   ?= vsim.exe -work $(VSIM_WORK)
+TARGET_SIM   ?= vsim -work $(VSIM_WORK)
 TARGET_FLAGS ?=
 
 RISCV_PREFIX   ?= riscv64-unknown-elf-
@@ -14,7 +14,7 @@ COMPILE_CMD=\
 		-I$(TARGETDIR)/$(RISCV_TARGET)/ \
 		-T$(TARGETDIR)/$(RISCV_TARGET)/env/linkmono.ld $$< \
 		-o $$@; \
-	$$(RISCV_OBJCOPY) -O binary $$@ $$@.bin \
+	$$(RISCV_OBJCOPY) -O binary $$@ $$@.bin; \
 	cat $$@.bin | hexdump -v -e '"%08x\n"' > $$@.mem
 
 OBJ_CMD = $$(RISCV_OBJDUMP) $$@ -D > $$@.objdump; \
