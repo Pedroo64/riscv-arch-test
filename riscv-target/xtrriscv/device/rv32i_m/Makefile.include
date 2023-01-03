@@ -1,4 +1,9 @@
-TARGET_SIM   ?= vsim -work $(VSIM_WORK)
+ifdef COCOTB_MAKEFILE_DIR
+	TARGET_SIM=$(MAKE) -C $(COCOTB_MAKEFILE_DIR)
+else
+	TARGET_SIM ?= vsim -work $(VSIM_WORK)
+endif
+
 TARGET_FLAGS ?=
 
 RISCV_PREFIX   ?= riscv64-unknown-elf-
@@ -35,11 +40,15 @@ COMPILE_TARGET=\
             exit 1 ; \
         fi ;
 
+ifdef COCOTB_MAKEFILE_DIR
 RUN_CMD=\
-    $(TARGET_SIM) $(TARGET_FLAGS) -c -quiet tb_xtr_soc -do 'run -all; exit -f' \
+	$(TARGET_SIM) $(TARGET_FLAGS) INIT_FILE=$<.mem OUTPUT_FILE=$(*).signature.output; echo "OK";
+else
+RUN_CMD=\
+    $(TARGET_SIM) $(TARGET_FLAGS) -c -quiet tb_xtr_soc -do 'set NumericStdNoWarnings 1; run -all; exit -f' \
         -gC_INIT_FILE=$<.mem \
 		-gC_OUTPUT_FILE=$(*).signature.output
-
+endif
 RUN_TARGET=\
 	$(RUN_CMD)
 
